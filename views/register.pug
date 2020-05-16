@@ -2,7 +2,7 @@ extends layout
 
 block content
     form(action='/register' method='post')
-        input(type='text' name='username' placeholder='Pseudo')
+        input(type='text' name='nom' placeholder='Votre nom')
         input(type='email' name='email' placeholder='Email')
-        input(type='password' name='password' placeholder='Mot de passe')
+        input(type='password' name='mdp' placeholder='Mot de passe')
         input(type='submit')

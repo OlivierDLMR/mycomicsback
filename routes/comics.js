@@ -15,7 +15,9 @@ router.post('/', (req, res) => {
         editeur: req.body.editeur,
         annee: req.body.annee,
         image: req.body.image,
-        numerocomics: req.body.numerocomics
+        scancode: req.body.scancode,
+        usercomics: req.body.usercomics,
+        
         
     });
     comics.save((err, newComics) => {

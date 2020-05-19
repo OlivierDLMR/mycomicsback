@@ -72,7 +72,7 @@ app.use(session({
 }));
 
 // authentifacation
-
+require('./auth/auth');
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(Usercomics.authenticate()));

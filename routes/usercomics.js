@@ -4,11 +4,11 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 
 /* GET User. */
-router.get('/', function(req, res, next) {
-    Usercomics.find().exec((err, usercomics) => {
-        res.json(usercomics)
-    })
-});
+// router.get('/', function(req, res, next) {
+//     Usercomics.find().exec((err, usercomics) => {
+//         res.json(usercomics)
+//     })
+// });
 
 
 router.post('/signup', passport.authenticate('signup', { session : false }) , (req, res, next) => {

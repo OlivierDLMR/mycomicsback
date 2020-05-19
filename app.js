@@ -6,31 +6,40 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var sassMiddleware = require('node-sass-middleware');
 var session = require('express-session');
+var bodyparser = require('body-parser');
+
+// gestion de l'authentifacation de l'utilisateur
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
 
 var mongoose = require('mongoose');
 var MongoStore = require('connect-mongo')(session);
 
 var Usercomics = require('./models/Usercomics');
-// gestion de l'authentifacation de l'utilisateur
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
+
+
+
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-// ajouter la route vers le dossier route
+// ajouter la route 
 var usercomicsRouter = require('./routes/usercomics');
 var comicsRouter = require('./routes/comics');
 
 var app = express();
 
 // Se connecter à la base de données
-mongoose.connect(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}/serverjwt`, {
+// mongoose.connect(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`
+mongoose.connect(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: true,
   useCreateIndex: true
 });
+mongoose.connection.on('error', error => console.log(error));
+
 
 
 // Enregistrer la connexion dans la variable db
@@ -39,6 +48,9 @@ app.locals.db = mongoose.connection;
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+
+app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({ extended: false }));
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -60,6 +72,7 @@ app.use(session({
 }));
 
 // authentifacation
+
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(Usercomics.authenticate()));
@@ -88,7 +101,6 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-require('./auth/auth');
-app.use(passport.initialize());
+
 
 module.exports = app;

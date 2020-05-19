@@ -24,7 +24,7 @@ router.post('/signup', passport.authenticate('signup', { session : false }) , (r
       }
       req.login(usercomics, { session : false }, err => {
         if(err) return next(err);
-        const body = { _id: usercomics._id, email: usercomics.email };
+        const body = { _id: usercomics._id, email: usercomics.nom };
         const token = jwt.sign({ usercomics : body }, 'top_secret');
         return res.json({ token });
       });

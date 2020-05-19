@@ -2,9 +2,16 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var Usercomics = require('../models/Usercomics');
+var Comics = require('../models/Comics')
 
-var Comics = require('../models/Comics'); router.get('/comics',(req, res) => {
-  Comics.find().populate('usercomics').sort({createdAt: -1}).exec((err, comics) => {
+// var Comics = require('../models/Comics'); router.get('/comics',(req, res) => {
+//   Comics.find().populate('usercomics').sort({createdAt: -1}).exec((err, comics) => {
+//     res.json(comics);
+//   });
+// });
+
+router.get('/comics', (req, res) => {
+  Comics.find().populate('usercomics').sort({ createdAt: -1 }).exec((err, comics) => {
     res.json(comics);
   });
 });
@@ -34,7 +41,9 @@ router.post('/register', (req, res) => {
 });
 
 router.post('/login', passport.authenticate('local'), (req, res) => {
-  res.redirect('/usercomics');
+  res.redirect('/comics');
 });
+
+
 
 module.exports = router;

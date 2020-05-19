@@ -5,15 +5,29 @@ const passportLocalMongoose = require('passport-local-mongoose');
 const bcrypt = require('bcrypt');
 
 
-const UsercomicsSchema =  new Schema({
-    nom: {type: String, required: true},
-    email: {type: String, required: true},
-    mdp: {type: String, required: true},
+const UsercomicsSchema =  new mongoose.Schema({
+    email: {
+        type: String,
+        unique: true,
+        required: true
+    },
+    mdp: {
+        type: String,
+        required: true
+    }
     
     
 });
+UsercomicsSchema.plugin(passportLocalMongoose, {
+    usernameField: 'email',
 
-UsercomicsSchema.pre('save' function(next) {
+})
+
+const Usercomics = mongoose.model('Usercomics', UsercomicsSchema)
+
+// module.exports = Usercomics
+
+UsercomicsSchema.pre('save', function(next) {
     bcrypt.hash(this.mdp, 10, (err, hash)=> {
         this.mdp = hash;
         next();
@@ -24,6 +38,6 @@ UsercomicsSchema.methods.isValidPassword = function(mdp, done) {
     bcrypt.compare(mdp, this.mdp, (err, isEqual) => done(isEqual));
 }
 
-UsercomicsSchema.plugin(passportLocalMongoose);
+// UsercomicsSchema.plugin(passportLocalMongoose);
 
-module.exports = mongoose.model('Usercomics', UsercomicsSchema);
+module.exports = mongoose.model('usercomics', UsercomicsSchema);

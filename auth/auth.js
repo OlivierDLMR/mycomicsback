@@ -14,14 +14,14 @@ passport.use(new JwtStrategy({
 
 passport.use('signup', new LocalStrategy({
     usernameField: 'email',
-    passwordField: 'password'
-  }, (email, password, done) => {
+    passwordField: 'mdp'
+  }, (email, mdp, done) => {
     UsercomicsModel.create({ email, mdp }, (err, usercomics) => done(err, usercomics));
   }));
   
   passport.use('login', new LocalStrategy({
     usernameField: 'email',
-    passwordField: 'password'
+    passwordField: 'mdp'
   }, (email, mdp, done) => {
     UsercomicsModel.findOne({ email }, (err, usercomics) => {
       if(!usercomics){

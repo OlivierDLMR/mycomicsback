@@ -32,7 +32,7 @@ router.post('/register', (req, res) => {
   const newUsercomics = new Usercomics({ nom: req.body.nom, email: req.body.email });
   Usercomics.register(newUsercomics, req.body.mdp, (err, usercomics) => {
     if (err) {
-      console.log(err);
+      // console.log(err);
       return res.render('register', { title: 'Créer un compte' });
     }
     console.log(router.post);

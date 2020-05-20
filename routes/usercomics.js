@@ -3,16 +3,22 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
-/* GET User. */
-// router.get('/', function(req, res, next) {
-//     Usercomics.find().exec((err, usercomics) => {
-//         res.json(usercomics)
-//     })
-// });
+// GET users 
+router.get('/', passport.authenticate('jwt', { session : false }), (req, res, next) => {
+  res.json({
+      message : 'You made it to the secure route',
+      user : req.usercomics,
+      token : req.query.secret_token
+  })
+});
 
 
 router.post('/signup', passport.authenticate('signup', { session : false }) , (req, res, next) => {
-    res.json({ message : 'Signup successful', usercomics : req.usercomics });
+    res.json({ 
+      message : 'Signup successful',
+      usercomics : req.usercomics,
+      token : req.query.secret_token 
+    });
   });
   
   router.post('/login', (req, res, next) => {
@@ -25,7 +31,7 @@ router.post('/signup', passport.authenticate('signup', { session : false }) , (r
       req.login(usercomics, { session : false }, err => {
         if(err) return next(err);
         const body = { _id: usercomics._id, email: usercomics.nom };
-        const token = jwt.sign({ usercomics : body }, 'top_secret');
+        const token = jwt.sign({ user : body }, 'top_secret');
         return res.json({ token });
       });
     })(req, res, next);

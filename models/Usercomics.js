@@ -15,30 +15,20 @@ const UsercomicsSchema =  new Schema({
         type: String,
         required: true
     }
-    
-    
 });
-UsercomicsSchema.plugin(passportLocalMongoose, {
-    usernameField: 'email',
-    passwordField: 'mdp',
 
-})
 
-const Usercomics = mongoose.model('Usercomics', UsercomicsSchema)
-
-// module.exports = Usercomics
-
-UsercomicsSchema.pre('save', function(next) {
-    bcrypt.hash(this.password, 10, (err, hash)=> {
+// UsercomicsSchema.plugin(passportLocalMongoose);
+UsercomicsSchema.pre('save', function (next) {
+    bcrypt.hash(this.password, 10, (err, hash) => {
         this.password = hash;
         next();
     });
 });
-
 UsercomicsSchema.methods.isValidPassword = function(password, done) {
     bcrypt.compare(password, this.password, (err, isEqual) => done(isEqual));
-}
+};
 
-// UsercomicsSchema.plugin(passportLocalMongoose);
+
 
 module.exports = mongoose.model('usercomics', UsercomicsSchema);

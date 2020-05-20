@@ -7,31 +7,30 @@ var logger = require('morgan');
 var sassMiddleware = require('node-sass-middleware');
 var session = require('express-session');
 var bodyparser = require('body-parser');
-
-// gestion de l'authentifacation de l'utilisateur
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-
 var mongoose = require('mongoose');
 var MongoStore = require('connect-mongo')(session);
 
 var Usercomics = require('./models/Usercomics');
 
 
-
-
-
+// routes
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
-// ajouter la route 
 var usercomicsRouter = require('./routes/usercomics');
 var comicsRouter = require('./routes/comics');
 
 var app = express();
 
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+
+io.on('connection', socket => {
+  console.log('user connected');
+});
+
 // Se connecter à la base de données
-// mongoose.connect(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`
 mongoose.connect(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -43,7 +42,7 @@ mongoose.connection.on('error', error => console.log(error));
 
 
 // Enregistrer la connexion dans la variable db
-app.locals.db = mongoose.connection;
+// app.locals.db = mongoose.connection;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -71,13 +70,13 @@ app.use(session({
   saveUninitialized: false
 }));
 
-// authentifacation
+// authentifacation passport
 require('./auth/auth');
 app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new LocalStrategy(Usercomics.authenticate()));
-passport.serializeUser(Usercomics.serializeUser());
-passport.deserializeUser(Usercomics.deserializeUser());
+// app.use(passport.session());
+// passport.use(new LocalStrategy(Usercomics.authenticate()));
+// passport.serializeUser(Usercomics.serializeUser());
+// passport.deserializeUser(Usercomics.deserializeUser());
 
 // affichage dans l'url
 app.use('/', indexRouter);

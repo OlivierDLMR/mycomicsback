@@ -12,13 +12,13 @@ passport.use(new JwtStrategy({
     return done(null, jwt_payload.user);
 }));
 
-passport.use('signup', new LocalStrategy({
-    usernameField: 'email',
-    passwordField: 'password'
-  }, (email, password, done) => {
-    console.log(email);
-    Usercomics.create({ email, password }, (err, usercomics) => done(err, usercomics));
-  }));
+// passport.use('signup', new LocalStrategy({
+//     usernameField: 'email',
+//     passwordField: 'password'
+//   }, (email, password, done) => {
+//     console.log(email);
+//     Usercomics.create({ email, password }, (err, usercomics) => done(err, usercomics));
+//   }));
   
   passport.use('login', new LocalStrategy({
     usernameField: 'email',

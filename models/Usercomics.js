@@ -18,7 +18,7 @@ const UsercomicsSchema =  new Schema({
 });
 
 
-// UsercomicsSchema.plugin(passportLocalMongoose);
+UsercomicsSchema.plugin(passportLocalMongoose);
 UsercomicsSchema.pre('save', function (next) {
     bcrypt.hash(this.password, 10, (err, hash) => {
         this.password = hash;

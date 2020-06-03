@@ -16,7 +16,7 @@ exports.register = (req, res, next) => {
                     console.log(err);
                     return res.status(500).json(err);
                 }
-                res.json(user);
+                res.json(usercomics);
             })
         }
     );

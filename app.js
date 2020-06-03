@@ -1,26 +1,25 @@
 require('dotenv').config();
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var sassMiddleware = require('node-sass-middleware');
-var session = require('express-session');
-// var bodyparser = require('body-parser');
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-var mongoose = require('mongoose');
-var MongoStore = require('connect-mongo')(session);
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const sassMiddleware = require('node-sass-middleware');
+const session = require('express-session');
+const mongoose = require('mongoose');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const MongoStore = require('connect-mongo')(session);
 
-var Usercomics = require('./models/Usercomics');
+const User = require('./models/Usercomics');
+
+//routes App
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/usercomics');
+const comicsRouter = require('./routes/comics');
 
 
-// routes
-var indexRouter = require('./routes/index');
-var usercomicsRouter = require('./routes/usercomics');
-var comicsRouter = require('./routes/comics');
-
-var app = express();
+const app = express();
 
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
@@ -29,30 +28,17 @@ io.on('connection', socket => {
   socket.on('new-message', message => socket.broadcast.emit('show-message', message));
 });
 
-// Se connecter à la base de données
-// mongoose.connect(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-//   useFindAndModify: true,
-//   useCreateIndex: true
-// });
-// mongoose.connection.on('error', error => console.log(error));
-
-
-
-// Enregistrer la connexion dans la variable db
-// app.locals.db = mongoose.connection;
-
-// view engine setup
-// app.set('views', path.join(__dirname, 'views'));
-// app.set('view engine', 'pug');
-//
-// app.use(bodyparser.json());
-// app.use(bodyparser.urlencoded({ extended: false }));
+// middleware all requests from all origins to access API.
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    next();
+});
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(sassMiddleware({
   src: path.join(__dirname, 'public'),
@@ -62,34 +48,37 @@ app.use(sassMiddleware({
 }));
 
 app.use(express.static(path.join(__dirname, 'public')));
+//router handler for images
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use(session({
-  store: new MongoStore({ mongooseConnection: mongoose.connection }),
+  store: new MongoStore({mongooseConnection: mongoose.connection}),
   secret: 'changethis',
   resave: false,
   saveUninitialized: false
 }));
 
-// authentifacation passport
+//passport authentification
 require('./middleware/auth');
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrategy(Usercomics.authenticate()));
-passport.serializeUser(Usercomics.serializeUser());
-passport.deserializeUser(Usercomics.deserializeUser());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
-// affichage dans l'url
+
+// used routes
 app.use('/', indexRouter);
-app.use('/usercomics', usercomicsRouter);
+app.use('/users', usersRouter);
 app.use('/comics', comicsRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -97,9 +86,22 @@ app.use(function(err, req, res, next) {
   // render the error page
   console.log(err);
   res.status(err.status || 500);
-  res.render('error');
+  res.json('error');
 });
 
+app.use(require('body-parser').json());
+app.use(require('body-parser').urlencoded({ extended: true }));
+app.use((err, req, res, next) => {
+  // This check makes sure this is a JSON parsing issue, but it might be
+  // coming from any middleware, not just body-parser:
+
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    console.error(err);
+    return res.sendStatus(400); // Bad request
+  }
+
+  next();
+});
 
 
 module.exports = app;

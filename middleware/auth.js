@@ -9,7 +9,7 @@ passport.use(new JwtStrategy({
     secretOrKey : 'top_secret', // modifier par une chaine de caractère aléatoire
     jwtFromRequest : ExtractJwt.fromAuthHeaderAsBearerToken()
 }, (jwt_payload, done) => {
-    return done(null, jwt_payload.user);
+    return done(null, jwt_payload.usercomics);
 }));
 
 // passport.use('signup', new LocalStrategy({

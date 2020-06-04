@@ -7,7 +7,7 @@ const ComicsSchema =  new Schema({
     annee: {type: Number, required: true},
     image: {type: String, required: true},
     scancode: {type: String, required: true},
-    usercomics: { type: Schema.Types.ObjectId, ref: 'Usercomics' },
+    usercomics: { type: Schema.Types.ObjectId, ref: 'User' },
     users: { type: [Array],
             required: true
     }

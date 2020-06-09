@@ -33,6 +33,4 @@ UsercomicsSchema.methods.isValidPassword = function(password, done) {
     bcrypt.compare(password, this.password, (err, isEqual) => done(isEqual));
 };
 
-
-
 module.exports = mongoose.model('usercomics', UsercomicsSchema);

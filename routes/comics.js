@@ -20,6 +20,7 @@ router.post('/', (req, res) => {
         user: req.body.usercomics,
         
         
+        
     });
     comics.save((err, newComics) => {
         if (err) return res.json(err);

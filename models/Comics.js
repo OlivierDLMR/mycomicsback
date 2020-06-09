@@ -5,12 +5,12 @@ const ComicsSchema =  new Schema({
     titre: {type: String, required: true},
     editeur: {type: String, required: true},
     annee: {type: Number, required: true},
-    image: {type: String, required: true},
-    scancode: {type: String, required: true},
-    usercomics: { type: Schema.Types.ObjectId, ref: 'User' },
+    image: {type: String, required: false},
+    scancode: {type: String, required: false},
+    user: { type: Schema.Types.ObjectId, ref: 'User' },
     users: { type: [Array],
             required: true
     }
-});
+});false
 
 module.exports = mongoose.model('Comics', ComicsSchema);

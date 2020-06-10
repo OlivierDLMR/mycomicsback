@@ -9,8 +9,8 @@ const ComicsSchema =  new Schema({
     scancode: {type: String, required: false},
     user: { type: Schema.Types.ObjectId, ref: 'User' },
     users: { type: [Array],
-            required: true
+            required: false
     }
-});false
+});
 
 module.exports = mongoose.model('Comics', ComicsSchema);

@@ -31,7 +31,7 @@ exports.login = (req, res, next) => {
         }
         req.login(user, {session: false}, err => {
             if (err) return next(err);
-            const body = {_id: user._id, email: user.email};
+            const body = {_id: user._id, username: user.username};
             const token = jwt.sign({user: body}, 'top_secret');
             return res.json({token, user});
         });

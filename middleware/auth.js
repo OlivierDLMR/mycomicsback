@@ -13,7 +13,7 @@ passport.use(new JwtStrategy({
 }));
 
   passport.use('login', new LocalStrategy({
-    usernameField: 'email',
+    usernameField: 'username', // email
     passwordField: 'password'
   }, (email, password, done) => {
     User.findOne({ email }, (err, user) => {

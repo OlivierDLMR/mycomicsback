@@ -9,14 +9,14 @@ passport.use(new JwtStrategy({
     secretOrKey : 'top_secret', // modifier par une chaine de caractère aléatoire
     jwtFromRequest : ExtractJwt.fromAuthHeaderAsBearerToken()
 }, (jwt_payload, done) => {
-    return done(null, jwt_payload.usercomics);
+    return done(null, jwt_payload.user); // usercomics
 }));
 
   passport.use('login', new LocalStrategy({
     usernameField: 'username', // email
     passwordField: 'password'
-  }, (email, password, done) => {
-    User.findOne({ email }, (err, user) => {
+  }, (username, password, done) => {
+    User.findOne({ username }, (err, user) => {
       if(!user){
         return done(null, false, { message : 'User not found'});
       }

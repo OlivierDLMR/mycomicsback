@@ -1,6 +1,6 @@
 const express = require('express');
 const passport = require('passport');
-// const jwt = require('jsonwebtoken');
+const User = require('../models/Usercomics');
 const router = express.Router();
 
 const userCtrl = require('../controllers/usercomics');
@@ -13,56 +13,21 @@ router.get('/', passport.authenticate('jwt', { session : false }), (req, res, ne
       token : req.query.secret_token
   })
 });
-
+// auth+register
 router.post('/', userCtrl.register);
 router.post('/login', userCtrl.login);
 
+router.put('/users/:id', (req, res, next, err) => {
+  const user = new User({
+      _id: req.params.id,
+      username: req.body.username,
+      email: req.body.email,
 
-// router.post('/signup', passport.authenticate('signup', { session : false }) , (req, res, next) => {
-//     res.json({
-//       message : 'Signup successful',
-//       usercomics : req.usercomics,
-//       token : req.query.secret_token
-//     });
-//   });
-  
-  // router.post('/login', (req, res, next) => {
-  //   passport.authenticate('login', (err, usercomics, info) => {
-  //     if(err) return next(err);
-  //     if(!usercomics) {
-  //       const error = new Error(info.message);
-  //       return next(error);
-  //     }
-  //     req.login(usercomics, { session : false }, err => {
-  //       if(err) return next(err);
-  //       const body = { _id: usercomics._id, email: usercomics.nom };
-  //       const token = jwt.sign({ user : body }, 'top_secret');
-  //       return res.json({ token });
-  //     });
-  //   })(req, res, next);
-  // });
-
- // res.json({
- //        message : 'You made it to the secure route',
- //        router.get('/profile', passport.authenticate('jwt', { session : false }), (req, res, next) => {
- //            user : req.usercomics,
- //        token : req.query.secret_token
- //    })
- //  });
-
-
-// router.post('/', (req, res) => {
-//     const usercomics = new Usercomics({
-//         nom: req.body.nom,
-//         email: req.body.email,
-//         mdp: req.body.mdp,
-
-//     });
-//     usercomics.save((err, newUsercomics) => {
-//         if (err) return res.json(err);
-//         res.json(newUsercomics);
-//     });
-// });
-
+  });
+  User.updateOne({_id: req.params.id}, user).then(() => {
+      if (err) return res.json(err);
+      res.json(User);
+  });
+});
 
 module.exports = router;

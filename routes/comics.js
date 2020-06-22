@@ -1,15 +1,19 @@
-var express = require('express');
-var router = express.Router();
-var Comics = require('../models/Comics');
+const express = require('express');
+const router = express.Router();
+const Comics = require('../models/Comics');
+
+const multer = require('../middleware/multer');
+const fs = require('fs');
 
 /* GET Comics. */
 router.get('/', function(req, res, next) {
     Comics.find().exec((err, comics) => {
+        console.log(comics);
         res.json(comics)
     })
 });
 /* POST comics */
-router.post('/', (req, res) => {
+router.post('/', multer, (req, res) => {
 
     const comics = new Comics({
         titre: req.body.titre,
@@ -18,9 +22,6 @@ router.post('/', (req, res) => {
         image: req.body.image,
         scancode: req.body.scancode,
         user: req.body.usercomics,
-        
-        
-        
     });
     comics.save((err, newComics) => {
         if (err) return res.json(err);
@@ -29,7 +30,7 @@ router.post('/', (req, res) => {
 });
 
 // Update comics
-router.put('/:id', (req, res, next) => {
+router.put('/:id', multer, (req, res, next) => {
     let comics = new Comics({_id: req.params._id});
     if (req.file) {
         const url = req.protocol + '://' + req.get('host');
@@ -64,6 +65,30 @@ router.put('/:id', (req, res, next) => {
         (error) => {
             res.sendStatus(400).json({
                 error: error
+            });
+        }
+    );
+});
+
+// Delete comics
+router.delete('/:id', (req, res, next) => {
+    Comics.findOne({_id: req.params.id}).then(
+        (comics) => {
+            const filename = comics.img.split('/images/')[1];
+            fs.unlink('images/' + filename, () => {
+                Comics.deleteOne({_id: req.params.id}).then(
+                    () => {
+                        res.sendStatus(200).json({
+                            message: 'Comics supprimé !'
+                        });
+                    }
+                ).catch(
+                    (error) => {
+                        res.sendStatus(400).json({
+                            error: error
+                        });
+                    }
+                );
             });
         }
     );

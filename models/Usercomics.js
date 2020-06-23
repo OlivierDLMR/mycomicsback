@@ -20,7 +20,7 @@ const UsercomicsSchema =  new Schema({
         required: true,
         unique: true
     },
-    // comics: {type: Schema.Types.ObjectId, ref: 'Comics'}
+    comics: {type: Schema.Types.ObjectId, ref: 'Comics'}
 });
 
 
